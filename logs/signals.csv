@@ -1,0 +1,6 @@
+datetime,pair,direction,score,grade,entry,stop_loss,tp1,tp2,session,rsi,macd_state,ema_trend,ema_cross
+2026-03-20 08:00:10,frxXAUUSD,SELL,9,B,4706.49000,4746.31281,4606.93297,4567.11016,London,50.63,bearish,above,bullish
+2026-03-20 08:00:16,R_100,BUY,9,B,622.06000,611.00445,644.17110,655.22666,London,53.22,bullish,above,bullish
+2026-03-20 08:00:16,R_100,BUY,9,B,622.06000,611.00445,644.17110,655.22666,London,53.22,bullish,above,bullish
+2026-03-20 08:55:57,R_100,BUY,9,B,622.06000,611.00445,644.17110,655.22666,London,53.22,bullish,above,bullish
+2026-03-20 13:00:58,frxXAUUSD,SELL,8,B,4678.29000,4717.45161,4580.38598,4541.22437,London/NY Overlap,47.11,bearish,above,bullish

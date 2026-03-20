@@ -1,0 +1,10 @@
+BACKTEST SUMMARY
+Pair,CRASH500
+Period,2025-12-24 04:00:00+00:00 to 2026-03-17 04:00:00+00:00
+Total Signals,0
+Win Rate,0.0%
+Profit Factor,0.00
+Total PnL (pips),0.00
+
+TRADES
+Entry Time,Direction,Grade,Score,Entry,SL,TP1,TP2,Exit Time,Exit Price,Exit Reason,PnL (pips)

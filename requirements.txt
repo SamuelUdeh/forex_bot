@@ -1,0 +1,28 @@
+# Forex Signal Bot Dependencies
+
+# OANDA API
+oandapyV20>=0.7.2
+
+# Deriv API (WebSocket)
+websockets==10.3
+
+# Technical Analysis
+pandas>=2.0.0
+pandas-ta>=0.3.14b0
+numpy>=1.24.0
+
+# Telegram Bot
+python-telegram-bot>=20.7
+
+# Scheduler
+APScheduler>=3.10.4
+
+# Environment Variables
+python-dotenv>=1.0.0
+
+# HTTP Requests
+requests>=2.31.0
+aiohttp>=3.9.0
+
+# Utilities
+pytz>=2024.1

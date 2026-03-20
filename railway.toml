@@ -1,0 +1,9 @@
+# Railway.app Configuration
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+numReplicas = 1
+restartPolicyType = "always"
+restartPolicyMaxRetries = 5

@@ -1,0 +1,11 @@
+BACKTEST SUMMARY
+Pair,R_25
+Period,2026-02-02 16:00:00+00:00 to 2026-03-16 06:00:00+00:00
+Total Signals,1
+Win Rate,100.0%
+Profit Factor,0.00
+Total PnL (pips),17.59
+
+TRADES
+Entry Time,Direction,Grade,Score,Entry,SL,TP1,TP2,Exit Time,Exit Price,Exit Reason,PnL (pips)
+2026-02-14 10:00:00+00:00,BUY,A,8/10,2824.59400,2807.00584,2842.18216,2853.90761,2026-02-14 20:00:00+00:00,2842.18216,TP1,17.59
