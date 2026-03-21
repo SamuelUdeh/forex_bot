@@ -225,25 +225,28 @@ class DerivFetcher:
         """
         try:
             async def _test():
-                async with websockets.connect(self.ws_url) as ws:
-                    # Simple ping
+                async with websockets.connect(self.ws_url, close_timeout=10) as ws:
+                    # Simple ping with timeout
                     await ws.send(json.dumps({"ping": 1}))
-                    response = await ws.recv()
+                    response = await asyncio.wait_for(ws.recv(), timeout=15)
                     data = json.loads(response)
                     return "pong" in data
 
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             try:
-                result = loop.run_until_complete(_test())
+                result = loop.run_until_complete(asyncio.wait_for(_test(), timeout=20))
                 if result:
                     print("[DERIV] Connection successful")
                 return result
             finally:
                 loop.close()
 
+        except asyncio.TimeoutError:
+            print("[DERIV] Connection timeout - will retry during scan")
+            return False
         except Exception as e:
-            print(f"[DERIV] Connection failed: {e}")
+            print(f"[DERIV] Connection test failed: {e}")
             return False
 
 
