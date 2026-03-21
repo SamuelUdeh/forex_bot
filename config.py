@@ -267,6 +267,15 @@ DERIV_INSTRUMENTS = {
         "reversal_mode": True
     },
     # ===== UNPROFITABLE - DISABLED =====
+    "R_15": {
+        "display_name": "Volatility 15 Index",
+        "enabled": False,  # Testing
+        "atr_multiplier_sl": 1.0,
+        "atr_multiplier_tp1": 2.0,
+        "atr_multiplier_tp2": 3.0,
+        "use_session_filter": False,
+        "min_confluence": 0.70
+    },
     "R_25": {
         "display_name": "Volatility 25 Index",
         "enabled": False,  # 33.3% WR - NOT PROFITABLE
@@ -274,6 +283,15 @@ DERIV_INSTRUMENTS = {
         "atr_multiplier_tp1": 1.5,
         "atr_multiplier_tp2": 2.5,
         "use_session_filter": False
+    },
+    "R_30": {
+        "display_name": "Volatility 30 Index",
+        "enabled": False,  # Testing
+        "atr_multiplier_sl": 1.0,
+        "atr_multiplier_tp1": 2.0,
+        "atr_multiplier_tp2": 3.0,
+        "use_session_filter": False,
+        "min_confluence": 0.70
     },
     "R_75": {
         "display_name": "Volatility 75 Index",
@@ -283,6 +301,15 @@ DERIV_INSTRUMENTS = {
         "atr_multiplier_tp1": 1.5,
         "atr_multiplier_tp2": 2.5,
         "use_session_filter": False
+    },
+    "R_90": {
+        "display_name": "Volatility 90 Index",
+        "enabled": False,  # Testing
+        "atr_multiplier_sl": 1.0,
+        "atr_multiplier_tp1": 2.0,
+        "atr_multiplier_tp2": 3.0,
+        "use_session_filter": False,
+        "min_confluence": 0.70
     },
     # ===== BOOM INDICES - MOSTLY UNPROFITABLE =====
     "BOOM300N": {
@@ -385,6 +412,89 @@ DERIV_INSTRUMENTS = {
         "atr_multiplier_tp1": 1.5,
         "atr_multiplier_tp2": 2.5,
         "use_session_filter": False
+    },
+    # ===== DERIV FOREX PAIRS =====
+    "frxEURUSD": {
+        "display_name": "EUR/USD (Deriv)",
+        "enabled": False,  # Testing
+        "atr_multiplier_sl": 1.5,
+        "atr_multiplier_tp1": 2.0,
+        "atr_multiplier_tp2": 3.0,
+        "use_session_filter": True,
+        "min_confluence": 0.70
+    },
+    "frxGBPUSD": {
+        "display_name": "GBP/USD (Deriv)",
+        "enabled": False,  # Testing
+        "atr_multiplier_sl": 1.5,
+        "atr_multiplier_tp1": 2.0,
+        "atr_multiplier_tp2": 3.0,
+        "use_session_filter": True,
+        "min_confluence": 0.70
+    },
+    "frxGBPJPY": {
+        "display_name": "GBP/JPY (Deriv)",
+        "enabled": False,  # Testing
+        "atr_multiplier_sl": 2.0,
+        "atr_multiplier_tp1": 2.0,
+        "atr_multiplier_tp2": 4.0,
+        "use_session_filter": True,
+        "min_confluence": 0.70
+    },
+    "frxUSDJPY": {
+        "display_name": "USD/JPY (Deriv)",
+        "enabled": False,  # Testing
+        "atr_multiplier_sl": 1.5,
+        "atr_multiplier_tp1": 2.0,
+        "atr_multiplier_tp2": 3.0,
+        "use_session_filter": True,
+        "min_confluence": 0.70
+    },
+    # ===== JUMP INDICES =====
+    "JD10": {
+        "display_name": "Jump 10 Index",
+        "enabled": False,  # Testing
+        "atr_multiplier_sl": 1.0,
+        "atr_multiplier_tp1": 2.0,
+        "atr_multiplier_tp2": 3.0,
+        "use_session_filter": False,
+        "min_confluence": 0.70
+    },
+    "JD25": {
+        "display_name": "Jump 25 Index",
+        "enabled": False,  # Testing
+        "atr_multiplier_sl": 1.0,
+        "atr_multiplier_tp1": 2.0,
+        "atr_multiplier_tp2": 3.0,
+        "use_session_filter": False,
+        "min_confluence": 0.70
+    },
+    "JD50": {
+        "display_name": "Jump 50 Index",
+        "enabled": False,  # Testing
+        "atr_multiplier_sl": 1.0,
+        "atr_multiplier_tp1": 2.0,
+        "atr_multiplier_tp2": 3.0,
+        "use_session_filter": False,
+        "min_confluence": 0.70
+    },
+    "JD75": {
+        "display_name": "Jump 75 Index",
+        "enabled": False,  # Testing
+        "atr_multiplier_sl": 1.0,
+        "atr_multiplier_tp1": 2.0,
+        "atr_multiplier_tp2": 3.0,
+        "use_session_filter": False,
+        "min_confluence": 0.70
+    },
+    "JD100": {
+        "display_name": "Jump 100 Index",
+        "enabled": False,  # Testing
+        "atr_multiplier_sl": 1.0,
+        "atr_multiplier_tp1": 2.0,
+        "atr_multiplier_tp2": 3.0,
+        "use_session_filter": False,
+        "min_confluence": 0.70
     },
 }
 

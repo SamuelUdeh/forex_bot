@@ -492,15 +492,19 @@ if __name__ == "__main__":
     print("=" * 60)
 
     if len(sys.argv) > 1:
-        pair = sys.argv[1].upper()
+        pair_input = sys.argv[1]
+        pair_upper = pair_input.upper()
         candles = int(sys.argv[2]) if len(sys.argv) > 2 else 1000
 
-        if pair in config.OANDA_INSTRUMENTS:
-            run_backtest_oanda(pair, candles)
-        elif pair in config.DERIV_INSTRUMENTS:
-            run_backtest_deriv(pair, candles)
+        if pair_upper in config.OANDA_INSTRUMENTS:
+            run_backtest_oanda(pair_upper, candles)
+        elif pair_upper in config.DERIV_INSTRUMENTS:
+            run_backtest_deriv(pair_upper, candles)
+        elif pair_input in config.DERIV_INSTRUMENTS:
+            # Handle lowercase keys like frxGBPJPY
+            run_backtest_deriv(pair_input, candles)
         else:
-            print(f"[ERROR] Unknown instrument: {pair}")
+            print(f"[ERROR] Unknown instrument: {pair_input}")
     else:
         print("\nUsage:")
         print("  python backtester.py XAU_USD 1000")
