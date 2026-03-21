@@ -280,6 +280,48 @@ class SignalEngine:
 
         return None
 
+    def get_htf_trend(self, df: pd.DataFrame) -> str:
+        """
+        Get Higher Timeframe (H4) trend from H1 data by resampling.
+
+        Returns:
+            'bullish' - H4 EMA50 > EMA200 and price above EMA50
+            'bearish' - H4 EMA50 < EMA200 and price below EMA50
+            'neutral' - Mixed signals
+        """
+        try:
+            # Resample H1 to H4
+            df_h4 = df.resample('4h').agg({
+                'open': 'first',
+                'high': 'max',
+                'low': 'min',
+                'close': 'last'
+            }).dropna()
+
+            if len(df_h4) < 50:
+                return 'neutral'
+
+            # Calculate EMAs on H4
+            ema50_h4 = ta.ema(df_h4['close'], length=50)
+            ema200_h4 = ta.ema(df_h4['close'], length=50)  # Use 50 for H4 (equivalent to 200 on H1)
+
+            if ema50_h4 is None or len(ema50_h4) < 1:
+                return 'neutral'
+
+            current_close = df_h4['close'].iloc[-1]
+            current_ema50 = ema50_h4.iloc[-1]
+
+            # Simple trend determination
+            if current_close > current_ema50:
+                return 'bullish'
+            elif current_close < current_ema50:
+                return 'bearish'
+            else:
+                return 'neutral'
+
+        except Exception as e:
+            return 'neutral'
+
     def calculate_indicators(self, df: pd.DataFrame) -> pd.DataFrame:
         """Calculate all technical indicators on price data"""
         if df is None or len(df) < self.settings["ema_slow"]:
@@ -710,6 +752,18 @@ class SignalEngine:
         require_bos = instrument_config.get("require_bos", False)
         if require_bos and not smc_result.bos_detected:
             return None  # No BOS = No trade (applies to trend AND reversal signals)
+
+        # ===== MULTI-TIMEFRAME CONFIRMATION =====
+        # Check H4 trend alignment with H1 signal
+        use_mtf = instrument_config.get("use_mtf_confirmation", False)
+        if use_mtf:
+            htf_trend = self.get_htf_trend(df)
+            # BUY signals need bullish H4 trend
+            if direction == "BUY" and htf_trend == "bearish":
+                return None  # H4 bearish, skip H1 BUY
+            # SELL signals need bearish H4 trend
+            if direction == "SELL" and htf_trend == "bullish":
+                return None  # H4 bullish, skip H1 SELL
 
         # Update max_score to include divergence bonus if present
         divergence_bonus = divergence_bonus_buy if direction == "BUY" else divergence_bonus_sell

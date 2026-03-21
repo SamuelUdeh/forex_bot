@@ -53,3 +53,4 @@ tmpclaude-*
 # Local test files
 test_*.py
 *_test.py
+logs/backtest/

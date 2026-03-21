@@ -253,7 +253,8 @@ DERIV_INSTRUMENTS = {
         "atr_multiplier_tp2": 3.0,  # 1:3 RR
         "use_session_filter": False,
         "min_confluence": 0.85,  # R_50 needs stricter filtering (85%)
-        "reversal_mode": False  # Disabled - 23.5% WR on reversals
+        "reversal_mode": False,  # Disabled - 23.5% WR on reversals
+        "use_mtf_confirmation": True  # H4 trend must align with H1 signal
     },
     "R_100": {
         "display_name": "Volatility 100 Index",
