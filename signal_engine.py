@@ -322,6 +322,51 @@ class SignalEngine:
         except Exception as e:
             return 'neutral'
 
+    def get_daily_trend(self, df: pd.DataFrame) -> str:
+        """
+        Get Daily trend from H4 data by resampling.
+        Used for BTC/USD MTF confirmation.
+
+        Returns:
+            'bullish' - Daily EMA50 > EMA200
+            'bearish' - Daily EMA50 < EMA200
+            'neutral' - Mixed signals or insufficient data
+        """
+        try:
+            # Resample H4 to Daily
+            df_daily = df.resample('1D').agg({
+                'open': 'first',
+                'high': 'max',
+                'low': 'min',
+                'close': 'last'
+            }).dropna()
+
+            if len(df_daily) < 50:
+                return 'neutral'
+
+            # Calculate EMAs on Daily
+            ema50_daily = ta.ema(df_daily['close'], length=50)
+            ema200_daily = ta.ema(df_daily['close'], length=200)
+
+            if ema50_daily is None or ema200_daily is None:
+                return 'neutral'
+            if len(ema50_daily) < 1 or len(ema200_daily) < 1:
+                return 'neutral'
+
+            current_ema50 = ema50_daily.iloc[-1]
+            current_ema200 = ema200_daily.iloc[-1]
+
+            # Trend based on EMA crossover
+            if current_ema50 > current_ema200:
+                return 'bullish'
+            elif current_ema50 < current_ema200:
+                return 'bearish'
+            else:
+                return 'neutral'
+
+        except Exception as e:
+            return 'neutral'
+
     def calculate_indicators(self, df: pd.DataFrame) -> pd.DataFrame:
         """Calculate all technical indicators on price data"""
         if df is None or len(df) < self.settings["ema_slow"]:
@@ -764,6 +809,18 @@ class SignalEngine:
             # SELL signals need bearish H4 trend
             if direction == "SELL" and htf_trend == "bullish":
                 return None  # H4 bullish, skip H1 SELL
+
+        # ===== DAILY MTF CONFIRMATION (for H4 signals like BTC) =====
+        # Check Daily trend alignment with H4 signal
+        use_daily_mtf = instrument_config.get("use_daily_mtf_confirmation", False)
+        if use_daily_mtf:
+            daily_trend = self.get_daily_trend(df)
+            # BUY signals need bullish Daily trend
+            if direction == "BUY" and daily_trend == "bearish":
+                return None  # Daily bearish, skip H4 BUY
+            # SELL signals need bearish Daily trend
+            if direction == "SELL" and daily_trend == "bullish":
+                return None  # Daily bullish, skip H4 SELL
 
         # Update max_score to include divergence bonus if present
         divergence_bonus = divergence_bonus_buy if direction == "BUY" else divergence_bonus_sell

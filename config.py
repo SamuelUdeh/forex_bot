@@ -232,6 +232,20 @@ DERIV_INSTRUMENTS = {
         "timeframe": "H1",
         "reversal_mode": True
     },
+    # ===== CRYPTOCURRENCY =====
+    "cryBTCUSD": {
+        "display_name": "BTC/USD (Bitcoin)",
+        "enabled": True,  # H4: 70% WR, PF 2.33 with Daily MTF alignment
+        "atr_multiplier_sl": 1.0,
+        "atr_multiplier_tp1": 2.0,  # 1:2 RR optimal
+        "atr_multiplier_tp2": 3.0,
+        "use_session_filter": False,  # 24/7 market
+        "min_confluence": 0.70,  # 70% confluence - sweet spot
+        "timeframe": "H4",  # H4 timeframe
+        "require_bos": False,
+        "reversal_mode": False,
+        "use_daily_mtf_confirmation": True  # Daily EMA50/200 alignment required
+    },
     # ===== PROFITABLE VOLATILITY INDICES =====
     "R_10": {
         "display_name": "Volatility 10 Index",
