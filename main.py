@@ -265,12 +265,17 @@ class SignalBot:
                     print(f"[PROCESS] Skipping {key} - signal sent {hours_diff:.1f}h ago")
                     continue
 
-            # Log the signal
-            self.logger.log_signal(signal)
+            # Set cooldown FIRST to prevent duplicates in same batch
+            # This prevents logging the same signal multiple times if Telegram fails
+            self.last_signals[key] = now
 
             # Send Telegram alert
             if self.telegram.send_signal(signal):
-                self.last_signals[key] = now
+                # Log only after successful Telegram send
+                self.logger.log_signal(signal)
+                print(f"[PROCESS] Signal sent and logged: {signal.direction} {signal.pair}")
+            else:
+                print(f"[PROCESS] Telegram failed for {signal.direction} {signal.pair} - not logged")
 
     def run_scan(self):
         """Run a complete scan cycle"""
