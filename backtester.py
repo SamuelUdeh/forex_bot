@@ -440,17 +440,19 @@ def run_backtest_oanda(pair: str, candles: int = 1000):
 
 
 def get_optimal_timeframe(symbol: str) -> str:
-    """Get the optimal timeframe for a given symbol based on backtest results"""
-    # R_75 works best on H4
+    """Get the optimal timeframe for a given symbol from config or default"""
+    # Check config for explicit timeframe setting
+    instrument_config = config.DERIV_INSTRUMENTS.get(symbol)
+    if instrument_config and "timeframe" in instrument_config:
+        return instrument_config["timeframe"]
+
+    # Legacy fallbacks
     if symbol == "R_75":
         return "H4"
-    # 1-second pairs need M5 (but we disabled them)
     elif symbol.startswith("1HZ"):
         return "M5"
-    # Boom/Crash work better on H4
     elif symbol.startswith("BOOM") or symbol.startswith("CRASH"):
         return "H4"
-    # All other synthetics work on H1
     else:
         return "H1"
 

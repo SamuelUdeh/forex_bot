@@ -827,24 +827,101 @@ class SignalEngine:
         if divergence_bonus > 0:
             max_score += 1  # Add divergence to max for display
 
-        # ===== CALCULATE ENTRY, SL, TP =====
+        # ===== CALCULATE ENTRY, SL, TP (STRUCTURE-BASED) =====
 
+        # Default to current price
         entry = close
-        atr_sl = instrument_config.get("atr_multiplier_sl", 1.5)
-        atr_tp1 = instrument_config.get("atr_multiplier_tp1", 1.5)
-        atr_tp2 = instrument_config.get("atr_multiplier_tp2", 2.5)
-        atr_tp3 = atr_tp2 * 1.5  # TP3 at 1.5x TP2 distance
+        sl_buffer = atr * 0.1  # Small buffer beyond structure (10% of ATR)
+
+        # Try to find structure-based entry and SL
+        use_structure_sl = instrument_config.get("use_structure_sl", True)
+
+        if use_structure_sl and smc_result.order_blocks:
+            # Find relevant Order Block for this direction
+            relevant_ob = None
+            for ob in reversed(smc_result.order_blocks):  # Most recent first
+                if not ob.mitigated:
+                    if direction == "BUY" and ob.is_bullish:
+                        # Bullish OB for BUY - price should be near or above OB
+                        if close >= ob.low and close <= ob.high * 1.01:  # Within or just above OB
+                            relevant_ob = ob
+                            break
+                    elif direction == "SELL" and not ob.is_bullish:
+                        # Bearish OB for SELL - price should be near or below OB
+                        if close <= ob.high and close >= ob.low * 0.99:  # Within or just below OB
+                            relevant_ob = ob
+                            break
+
+            if relevant_ob:
+                # Use Order Block for entry and SL
+                if direction == "BUY":
+                    entry = relevant_ob.high  # Enter at OB high (or use mid for better fill)
+                    stop_loss = relevant_ob.low - sl_buffer  # SL below OB
+                else:
+                    entry = relevant_ob.low  # Enter at OB low
+                    stop_loss = relevant_ob.high + sl_buffer  # SL above OB
+
+                # Calculate SL distance for TP calculation
+                sl_distance = abs(entry - stop_loss)
+            else:
+                # No relevant OB, use nearest S/R level
+                if direction == "BUY" and smc_result.support_levels:
+                    nearest_support = min(smc_result.support_levels, key=lambda x: abs(x.price - close))
+                    if abs(nearest_support.price - close) < atr:  # Support is within 1 ATR
+                        stop_loss = nearest_support.price - sl_buffer
+                        sl_distance = abs(entry - stop_loss)
+                    else:
+                        sl_distance = atr * instrument_config.get("atr_multiplier_sl", 0.5)
+                        stop_loss = entry - sl_distance
+                elif direction == "SELL" and smc_result.resistance_levels:
+                    nearest_resistance = min(smc_result.resistance_levels, key=lambda x: abs(x.price - close))
+                    if abs(nearest_resistance.price - close) < atr:  # Resistance is within 1 ATR
+                        stop_loss = nearest_resistance.price + sl_buffer
+                        sl_distance = abs(entry - stop_loss)
+                    else:
+                        sl_distance = atr * instrument_config.get("atr_multiplier_sl", 0.5)
+                        stop_loss = entry + sl_distance
+                else:
+                    # Fallback to ATR-based SL
+                    sl_distance = atr * instrument_config.get("atr_multiplier_sl", 0.5)
+                    if direction == "BUY":
+                        stop_loss = entry - sl_distance
+                    else:
+                        stop_loss = entry + sl_distance
+        else:
+            # ATR-based SL (fallback or if structure SL disabled)
+            atr_sl = instrument_config.get("atr_multiplier_sl", 0.5)
+            sl_distance = atr * atr_sl
+            if direction == "BUY":
+                stop_loss = entry - sl_distance
+            else:
+                stop_loss = entry + sl_distance
+
+        # ===== APPLY MAX SL CAP =====
+        # Prevent SL from being too large for small accounts
+        # Max SL in price points (e.g., 15 points = ~$15 at 0.01 lot for Gold)
+        max_sl_points = instrument_config.get("max_sl_points", None)
+        if max_sl_points and sl_distance > max_sl_points:
+            sl_distance = max_sl_points
+            if direction == "BUY":
+                stop_loss = entry - sl_distance
+            else:
+                stop_loss = entry + sl_distance
+
+        # Calculate TP based on RR ratio from SL distance
+        # Minimum 1:2 RR for TP1, 1:3 for TP2
+        tp1_rr = instrument_config.get("tp1_rr", 2.0)  # 1:2 RR default
+        tp2_rr = instrument_config.get("tp2_rr", 3.0)  # 1:3 RR default
+        tp3_rr = tp2_rr * 1.5
 
         if direction == "BUY":
-            stop_loss = entry - (atr * atr_sl)
-            tp1 = entry + (atr * atr_tp1)
-            tp2 = entry + (atr * atr_tp2)
-            tp3 = entry + (atr * atr_tp3)
+            tp1 = entry + (sl_distance * tp1_rr)
+            tp2 = entry + (sl_distance * tp2_rr)
+            tp3 = entry + (sl_distance * tp3_rr)
         else:
-            stop_loss = entry + (atr * atr_sl)
-            tp1 = entry - (atr * atr_tp1)
-            tp2 = entry - (atr * atr_tp2)
-            tp3 = entry - (atr * atr_tp3)
+            tp1 = entry - (sl_distance * tp1_rr)
+            tp2 = entry - (sl_distance * tp2_rr)
+            tp3 = entry - (sl_distance * tp3_rr)
 
         # ===== DETERMINE GRADE =====
         # A+ = 95%+ confluence (12/12) - PERFECT setup

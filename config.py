@@ -212,14 +212,15 @@ DERIV_INSTRUMENTS = {
     # ===== FOREX ON DERIV =====
     "frxXAUUSD": {
         "display_name": "XAU/USD (Gold)",
-        "enabled": True,  # H4: 100% WR with BOS + 65% confluence
-        "atr_multiplier_sl": 0.5,  # REDUCED: 0.5x ATR = ~$50 risk at 0.01 lot (was 1.0x = $100+)
-        "atr_multiplier_tp1": 1.0,  # 1:2 RR (0.5 SL : 1.0 TP)
+        "enabled": True,
+        "atr_multiplier_sl": 0.5,  # 0.5x ATR for fallback
+        "atr_multiplier_tp1": 1.0,  # 1:2 RR
         "atr_multiplier_tp2": 1.5,  # 1:3 RR
+        "max_sl_points": 20,  # MAX SL: 20 points = ~$20 at 0.01 lot (safety cap)
         "use_session_filter": True,
-        "min_confluence": 0.65,  # 65% confluence on H4
-        "timeframe": "H4",  # H4 for clearer SMC structure
-        "require_bos": True,  # Require Break of Structure - 100% WR filter
+        "min_confluence": 0.65,
+        "timeframe": "H1",  # H1: Structure-based SL ~$12-15 naturally, 50% WR, PF 3.15
+        "require_bos": False,  # BOS not required - structure SL provides edge
         "reversal_mode": True
     },
     "frxXAGUSD": {
@@ -236,9 +237,10 @@ DERIV_INSTRUMENTS = {
     "cryBTCUSD": {
         "display_name": "BTC/USD (Bitcoin)",
         "enabled": True,  # H4: 70% WR, PF 2.33 with Daily MTF alignment
-        "atr_multiplier_sl": 0.5,  # REDUCED: 0.5x ATR = ~$6 risk at 0.01 lot (was 1.0x = $12)
-        "atr_multiplier_tp1": 1.0,  # 1:2 RR (0.5 SL : 1.0 TP)
+        "atr_multiplier_sl": 0.5,  # 0.5x ATR for fallback
+        "atr_multiplier_tp1": 1.0,  # 1:2 RR
         "atr_multiplier_tp2": 1.5,  # 1:3 RR
+        "max_sl_points": 1500,  # MAX SL: 1500 pts = ~$15 at 0.01 lot (safety cap)
         "use_session_filter": False,  # 24/7 market
         "min_confluence": 0.70,  # 70% confluence - sweet spot
         "timeframe": "H4",  # H4 timeframe
