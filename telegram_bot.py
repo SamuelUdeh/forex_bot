@@ -77,8 +77,52 @@ class TelegramBot:
         rr1 = "1:2"
         rr2 = "1:3"
 
+        # === POSITION SIZING CALCULATOR ===
+        sl_distance = abs(signal.entry - signal.stop_loss)
+
+        # Calculate risk per 0.01 lot based on instrument type
+        if "XAU" in signal.pair or "XAG" in signal.pair:
+            # Gold/Silver: $1 per point per 0.01 lot
+            risk_per_micro = sl_distance * 1.0
+        elif signal.pair.startswith("cry"):
+            # Crypto: ~$0.01 per point per 0.01 lot
+            risk_per_micro = sl_distance * 0.01
+        elif signal.pair.startswith("R_") or signal.pair.startswith("BOOM") or signal.pair.startswith("CRASH"):
+            # Synthetics: ~$0.01 per point per 0.01 lot
+            risk_per_micro = sl_distance * 0.01
+        else:
+            # Forex: ~$0.10 per pip per 0.01 lot
+            risk_per_micro = sl_distance * 10000 * 0.001
+
+        # Calculate minimum account for 2% risk at 0.01 lot
+        min_account_2pct = int(risk_per_micro / 0.02) if risk_per_micro > 0 else 100
+        min_account_5pct = int(risk_per_micro / 0.05) if risk_per_micro > 0 else 50
+
+        # Calculate recommended lot sizes (2% risk)
+        # risk_per_micro is risk at 0.01 lot, so risk_per_lot = risk_per_micro * 100
+        def calc_lot_size(account_size, risk_pct=0.02):
+            max_risk = account_size * risk_pct
+            if risk_per_micro > 0:
+                risk_per_lot = risk_per_micro * 100  # Convert to risk per 1.0 lot
+                lot = max_risk / risk_per_lot
+                return max(0.01, round(lot, 2))
+            return 0.01
+
+        # Calculate actual risk % at 0.01 lot for different accounts
+        def actual_risk_pct(account_size):
+            return (risk_per_micro / account_size) * 100 if account_size > 0 else 100
+
+        lot_500 = calc_lot_size(500)
+        lot_1000 = calc_lot_size(1000)
+        lot_2500 = calc_lot_size(2500)
+
+        # Determine if this is a high-risk instrument for small accounts
+        is_high_risk = risk_per_micro > 20  # More than $20 risk at 0.01 lot
+
         # Determine timeframe based on pair
         if signal.pair == "R_75":
+            timeframe = "H4"
+        elif signal.pair.startswith("frxXAU") or signal.pair.startswith("cry"):
             timeframe = "H4"
         else:
             timeframe = "H1"
@@ -129,8 +173,13 @@ Volume: {vol_info}
 
 Indicators: RSI {signal.rsi:.1f} | ADX {signal.adx:.1f}
 
+\U0001F4A1 POSITION SIZING:
+SL: {sl_distance:.0f} pts = ${risk_per_micro:.2f} at 0.01 lot
+Min Account (2% risk): ${min_account_2pct}
+$500: {lot_500} lot | $1000: {lot_1000} lot | $2500: {lot_2500} lot
+{'\u26A0 HIGH RISK for accounts under $' + str(min_account_5pct) if is_high_risk else ''}
+
 \U0001F4CC Set {signal.direction} LIMIT order at {entry_str}
-\u26A0 Risk 1-2% of your account
 {datetime_str}
 """
         return message.strip()

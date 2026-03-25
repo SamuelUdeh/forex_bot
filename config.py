@@ -99,22 +99,22 @@ INDICATORS = {
 # OANDA Forex & Metals
 # Set 'enabled' to True/False to include/exclude
 OANDA_INSTRUMENTS = {
-    # Metals
+    # Metals - TIGHTER SL for small accounts
     "XAU_USD": {
         "display_name": "XAU/USD (Gold)",
         "enabled": True,
-        "atr_multiplier_sl": 1.5,
-        "atr_multiplier_tp1": 1.5,
-        "atr_multiplier_tp2": 3.0,
+        "atr_multiplier_sl": 0.5,  # REDUCED: ~$50 risk at 0.01 lot (was 1.5x = $150+)
+        "atr_multiplier_tp1": 1.0,  # 1:2 RR
+        "atr_multiplier_tp2": 1.5,  # 1:3 RR
         "use_session_filter": True,
         "reversal_mode": True
     },
     "XAG_USD": {
         "display_name": "XAG/USD (Silver)",
         "enabled": True,
-        "atr_multiplier_sl": 1.5,
-        "atr_multiplier_tp1": 1.5,
-        "atr_multiplier_tp2": 3.0,
+        "atr_multiplier_sl": 0.5,  # REDUCED for smaller risk
+        "atr_multiplier_tp1": 1.0,  # 1:2 RR
+        "atr_multiplier_tp2": 1.5,  # 1:3 RR
         "use_session_filter": True,
         "reversal_mode": True
     },
@@ -213,9 +213,9 @@ DERIV_INSTRUMENTS = {
     "frxXAUUSD": {
         "display_name": "XAU/USD (Gold)",
         "enabled": True,  # H4: 100% WR with BOS + 65% confluence
-        "atr_multiplier_sl": 1.0,
-        "atr_multiplier_tp1": 3.0,  # 1:3 RR for Gold - optimal
-        "atr_multiplier_tp2": 4.0,
+        "atr_multiplier_sl": 0.5,  # REDUCED: 0.5x ATR = ~$50 risk at 0.01 lot (was 1.0x = $100+)
+        "atr_multiplier_tp1": 1.0,  # 1:2 RR (0.5 SL : 1.0 TP)
+        "atr_multiplier_tp2": 1.5,  # 1:3 RR
         "use_session_filter": True,
         "min_confluence": 0.65,  # 65% confluence on H4
         "timeframe": "H4",  # H4 for clearer SMC structure
@@ -236,9 +236,9 @@ DERIV_INSTRUMENTS = {
     "cryBTCUSD": {
         "display_name": "BTC/USD (Bitcoin)",
         "enabled": True,  # H4: 70% WR, PF 2.33 with Daily MTF alignment
-        "atr_multiplier_sl": 1.0,
-        "atr_multiplier_tp1": 2.0,  # 1:2 RR optimal
-        "atr_multiplier_tp2": 3.0,
+        "atr_multiplier_sl": 0.5,  # REDUCED: 0.5x ATR = ~$6 risk at 0.01 lot (was 1.0x = $12)
+        "atr_multiplier_tp1": 1.0,  # 1:2 RR (0.5 SL : 1.0 TP)
+        "atr_multiplier_tp2": 1.5,  # 1:3 RR
         "use_session_filter": False,  # 24/7 market
         "min_confluence": 0.70,  # 70% confluence - sweet spot
         "timeframe": "H4",  # H4 timeframe
